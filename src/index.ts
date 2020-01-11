@@ -1,6 +1,8 @@
 import isEmpty from 'lodash/isEmpty';
 import { Backtest } from './interfaces.backtest';
 
+export * from './interfaces.backtest';
+
 interface Options {
     capital?: number;
 };

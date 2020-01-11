@@ -12,7 +12,7 @@
     "sourceMap": true,
     "inlineSources": true,
     "esModuleInterop": true,
-    "types": ["node", "mocha"],
+    "types": ["node"],
     "resolveJsonModule": true
   },
   "include": [
