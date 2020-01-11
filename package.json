@@ -1,0 +1,73 @@
+{
+  "name": "@vuga/barebone",
+  "private": false,
+  "version": "0.0.1",
+  "description": "Intraday backtesting library",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "register/",
+    "LICENSE"
+  ],
+  "scripts": {
+    "lint": "tslint \"src/**/*.ts\" --project tsconfig.json",
+    "build": "rimraf dist && tsc",
+    "test-spec": "ava src/strategy.test.ts",
+    "test": "npm run test-spec",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "engines": {
+    "node": ">=4.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vugga/barebone.git"
+  },
+  "keywords": [
+    "algorithms",
+    "strategies",
+    "backtesting",
+    "quant",
+    "stocks"
+  ],
+  "author": {
+    "name": "Ceddy Muhoza",
+    "email": "ceddymuhoza@gmail.com",
+    "url": "http://ceddy.org"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vugga/barebone/issues"
+  },
+  "homepage": "https://github.com/vugga/barebone",
+  "devDependencies": {
+    "@types/lodash": "^4.14.144",
+    "@types/node": "^10.0.3",
+    "@types/source-map-support": "^0.4.0",
+    "ava": "^2.4.0",
+    "chalk": "^3.0.0",
+    "rimraf": "^2.5.4",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.11.0",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.2.4"
+  },
+  "peerDependencies": {
+    "typescript": ">=2.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
+  "ava": {
+    "verbose": true,
+    "compileEnhancements": false,
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
+}

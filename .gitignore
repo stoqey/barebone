@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+.DS_Store
+firebase.config.js*
+firebase.config.ts*
+*.account.json*
+.env*
+npm-debug.log*
+yarn-error.log*
+dist/
