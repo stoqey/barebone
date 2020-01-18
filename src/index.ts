@@ -5,6 +5,7 @@ export * from './interfaces.backtest';
 
 interface Options {
     capital?: number;
+    debug?: boolean;
 };
 
 interface BackTestArgs {
@@ -16,6 +17,19 @@ interface BackTestArgs {
 const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> => {
     const { strategy, marketData: prices, options } = backtestArgs;
     const { onMarketTick, analysePosition } = strategy;
+
+    const { debug } = options;
+
+    /**
+     * Log function
+     * @param itemTolog 
+     */
+    const log = (itemTolog: any)=> {
+        if(debug && itemTolog){
+            console.log(itemTolog)
+        };
+        return;
+    }
 
     const initCapital = options && options.capital || 1000
 
@@ -61,10 +75,10 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         position.profitAmount = profitOfCapitalAmount;
 
         if (profit > 0.01) {
-            console.log(`CLOSE ---> ${profit}`)
+            log(`CLOSE ---> ${profit}`)
         }
         else {
-            console.log(`CLOSE ---> ${profit}`)
+            log(`CLOSE ---> ${profit}`)
         }
 
         // Record position
@@ -127,7 +141,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         continue;
     }
 
-    console.log(`Finished processing all ${totalPrices} items`)
+    log(`Finished processing all ${totalPrices} items`)
 
     return finishTrading();
 };
