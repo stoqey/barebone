@@ -9,16 +9,9 @@ export declare namespace Backtest {
     }
 
     export interface BarData {
-        reqId: number,
-        date: string; // "20190308  11:59:56"
-        open: number;
-        high: number;
-        low: number;
+        date: string | Date;
         close: number;
         volume?: number;
-        barCount?: number;
-        WAP?: number;
-        hasGaps?: boolean;
     }
 
     export interface AnalysePosition {
@@ -45,3 +38,5 @@ export declare namespace Backtest {
     }
 
 }
+
+export default Backtest;
