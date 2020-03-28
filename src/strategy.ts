@@ -38,6 +38,7 @@ export async function runStrategy(args: BackTestParams): Promise<Backtest.Contex
             onMarketTick: async ({ bar, enterPosition }) => {
                 // Do some code here
                 // 
+                console.log('onMarketTick bar ====> ', bar);
             }
         }
 

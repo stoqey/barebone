@@ -24,8 +24,8 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
      * Log function
      * @param itemTolog 
      */
-    const log = (itemTolog: any)=> {
-        if(debug && itemTolog){
+    const log = (itemTolog: any) => {
+        if (debug && itemTolog) {
             console.log(itemTolog)
         };
         return;
@@ -53,13 +53,18 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
     const recordPosition = (): void => {
         // Get position 
         // Add calculate profile
-        const profit = currentBar.close - position.entryPrice;
-        // const profitOfCapitalAmount = (profit / position.entryPrice) * context.capital;
+
+        // default for is BUY
+        let profitToSave = currentBar.close - position.entryPrice;
+
+        // calculate profit Sell types
+        if (position.tradeType === 'SELL') {
+            profitToSave = position.entryPrice - currentBar.close;
+        };
 
         position = {
             ...position,
-            profit,
-            // profit: profitOfCapitalAmount,
+            profit: profitToSave,
         }
     }
 
@@ -89,9 +94,10 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
     }
 
     // Code to enterPosition
-    const enterPosition = (): void => {
+    const enterPosition = (tradeType?: Backtest.TradeType): void => {
         // Create position, 
         position = {
+            tradeType: tradeType || 'BUY', // default is buy by default
             entryPrice: currentBar.close,
             entryTime: currentBar.date,
             profit: 0,
@@ -112,7 +118,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         // return finished trades
         return {
             ...context,
-            profit: !isEmpty(context.trades) && context.trades.map(t => t.profitAmount).reduce((acc, curVar) => acc + curVar, 0)  || 0,
+            profit: !isEmpty(context.trades) && context.trades.map(t => t.profitAmount).reduce((acc, curVar) => acc + curVar, 0) || 0,
             totalTrades: context.trades && context.trades.length | 0
         };
     }

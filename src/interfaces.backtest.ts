@@ -1,5 +1,7 @@
 export declare namespace Backtest {
+    export type TradeType = 'BUY' | 'SELL';
     export interface Position {
+        tradeType: TradeType;
         entryTime: Date;
         entryPrice: number;
         profit: number;

@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { isNumber } from 'util';
 import { Backtest } from './interfaces.backtest';
 
-const marketData: Backtest.BarData[] = demoData.marketData.map((i) => ({ date: new Date(i.time), close: +i.price }));
+const marketData: Backtest.BarData[] = demoData.marketData.map((i) => ({ date: new Date(+i.time), close: +i.price }));
 
 const demoBacktest: BackTestParams = {
     symbol: 'BTCUSDT',
