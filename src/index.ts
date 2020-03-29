@@ -1,5 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import { Backtest } from './interfaces.backtest';
+import { getPercentageGain, getTotalProfitAmount } from './utils';
 
 export * from './interfaces.backtest';
 
@@ -54,19 +55,40 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         // Get position 
         // Add calculate profile
 
-        // default for is BUY
-        let profitToSave = currentBar.close - position.entryPrice;
 
-        // calculate profit Sell types
-        if (position.tradeType === 'SELL') {
-            profitToSave = position.entryPrice - currentBar.close;
-        };
+        const profitToSave = (() => {
+            // calculate profit Sell types
+            if (position.tradeType === 'SELL') {
+                return position.entryPrice - currentBar.close;
+            };
+            // default for is BUY
+            return currentBar.close - position.entryPrice;
+        })();
+
+        const { startPrice, endPrice } = ((): any => {
+            if (position.tradeType === 'SELL') {
+                return {
+                    startPrice: currentBar.close,
+                    endPrice: position.entryPrice
+                }
+            }
+            // Default for BUY
+            return {
+                startPrice: position.entryPrice,
+                endPrice: currentBar.close
+            }
+        })();
+
+        const profitPercentage = getPercentageGain(startPrice, endPrice);
 
         console.log('profit ------------> ', profitToSave)
+        console.log('profit perce ------------> ', profitPercentage)
+
 
         position = {
             ...position,
             profit: profitToSave,
+            profitPct: profitPercentage,
         }
     }
 
@@ -77,16 +99,17 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
         const profit: any = position.profit.toFixed(2);
 
-        const profitOfCapitalAmount = (profit / position.entryPrice) * context.capital;
+        const profitOfCapitalAmount = (() => {
+            if (position.tradeType === 'SELL') {
+                return getTotalProfitAmount(currentBar.close, position.entryPrice, initCapital)
+            }
+            // Normal for BUY
+            return getTotalProfitAmount(position.entryPrice, currentBar.close, initCapital)
+        })();
 
         position.profitAmount = profitOfCapitalAmount;
 
-        if (profit > 0.01) {
-            log(`CLOSE ---> ${profit}`)
-        }
-        else {
-            log(`CLOSE ---> ${profit}`)
-        }
+        log(`CLOSE ---> ${profit}`);
 
         // Record position
         context.trades.push(position);
