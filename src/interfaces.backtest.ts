@@ -11,7 +11,7 @@ export declare namespace Backtest {
     }
 
     export interface BarData {
-        date: string | Date;
+        date: Date;
         close: number;
         volume?: number;
     }
