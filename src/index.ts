@@ -81,8 +81,8 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
         const profitPercentage = getPercentageGain(startPrice, endPrice);
 
-        console.log('profit ------------> ', profitToSave)
-        console.log('profit perce ------------> ', profitPercentage)
+        log(`profit amount     ------------> ${profitToSave}`)
+        log(`profit percentage ------------> ${profitPercentage}`)
 
 
         position = {

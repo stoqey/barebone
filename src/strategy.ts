@@ -26,7 +26,7 @@ export async function runStrategy(args: BackTestParams): Promise<Backtest.Contex
         marketData,
         options: {
             capital,
-            debug: true,
+            debug: false,
         },
 
         strategy: {
@@ -41,7 +41,7 @@ export async function runStrategy(args: BackTestParams): Promise<Backtest.Contex
 
                 // BUY
                 if (bar.close > bitcoinPrice) {
-                    console.log('start-----------> ', bar.close)
+                    console.log(`start-----------> ${bar && bar.close}`, )
                     enterPosition('BUY')
                 }
             }
