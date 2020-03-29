@@ -24,7 +24,7 @@ export declare namespace Backtest {
 
     export interface MarketTick {
         bar: BarData;
-        enterPosition: (tradeType: TradeType) => void;
+        enterPosition: (tradeType?: TradeType) => void;
     }
 
     export interface Strategy {
