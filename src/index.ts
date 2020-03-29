@@ -62,6 +62,8 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             profitToSave = position.entryPrice - currentBar.close;
         };
 
+        console.log('profit ------------> ', profitToSave)
+
         position = {
             ...position,
             profit: profitToSave,

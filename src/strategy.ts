@@ -1,8 +1,6 @@
 import backtest from '.';
 import { Backtest } from './interfaces.backtest';
 
-const dateFormat = "YYYYMMDD hh:mm:ss";
-
 type BarData = Backtest.BarData;
 
 const capital = 1000; // or any amount you want
@@ -13,6 +11,7 @@ export interface BackTestParams {
     // you own custom props here
 }
 
+const bitcoinPrice = 8000;
 
 export async function runStrategy(args: BackTestParams): Promise<Backtest.Context> {
 
@@ -27,18 +26,35 @@ export async function runStrategy(args: BackTestParams): Promise<Backtest.Contex
         marketData,
         options: {
             capital,
+            debug: true,
         },
 
         strategy: {
             analysePosition: async ({ bar, position, exitPosition }) => {
-                // Analyse you position here
-                // you exit out of this position if you want
-                // And results with P&L(Profit and Loss are) included
+                // SELL
+                // if(bar.close > position.entryPrice){
+                //     exitPosition();
+                // }
+
+                // BUY
+                // if (bar.close < position.entryPrice) {
+                //     console.log('exit-----------> ', bar.close)
+                //     exitPosition();
+                // }
+
             },
             onMarketTick: async ({ bar, enterPosition }) => {
-                // Do some code here
-                // 
-                console.log('onMarketTick bar ====> ', bar);
+                //   SELL
+                // if (bar.close < bitcoinPrice) {
+                //     console.log('start-----------> ', bar.close)
+                //     enterPosition('SELL')
+                // }
+
+                // BUY
+                if (bar.close > bitcoinPrice) {
+                    console.log('start-----------> ', bar.close)
+                    enterPosition('BUY')
+                }
             }
         }
 

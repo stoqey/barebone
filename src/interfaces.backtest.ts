@@ -17,14 +17,14 @@ export declare namespace Backtest {
     }
 
     export interface AnalysePosition {
-        bar?: BarData;
+        bar: BarData;
         position: Position;
         exitPosition: () => void;
     }
 
     export interface MarketTick {
-        bar?: BarData;
-        enterPosition: () => void;
+        bar: BarData;
+        enterPosition: (tradeType: TradeType) => void;
     }
 
     export interface Strategy {
