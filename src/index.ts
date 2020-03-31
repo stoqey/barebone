@@ -58,26 +58,28 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
         const tradeType = position && position.tradeType;
 
+        const closePrice = currentBar && currentBar.close || (position.entryPrice + position.profit);
+
         const profitToSave = (() => {
             // calculate profit Sell types
             if (tradeType === 'SELL') {
-                return position.entryPrice - currentBar.close;
+                return position.entryPrice - closePrice;
             };
             // default for is BUY
-            return currentBar.close - position.entryPrice;
+            return closePrice - position.entryPrice;
         })();
 
         const { startPrice, endPrice } = ((): any => {
             if (tradeType === 'SELL') {
                 return {
-                    startPrice: currentBar.close,
+                    startPrice: closePrice,
                     endPrice: position.entryPrice
                 }
             }
             // Default for BUY
             return {
                 startPrice: position.entryPrice,
-                endPrice: currentBar.close
+                endPrice: closePrice
             }
         })();
 
