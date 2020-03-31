@@ -57,9 +57,10 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
 
         const tradeType = position && position.tradeType;
-
-        const closePrice = currentBar && currentBar.close || (position.entryPrice + position.profit);
         const entryPrice = position && position.entryPrice;
+        const profitMade = position && position.profit;
+        const closePrice = currentBar && currentBar.close || (entryPrice + profitMade);
+
 
         const profitToSave = (() => {
             // calculate profit Sell types
