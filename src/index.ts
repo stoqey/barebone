@@ -56,9 +56,11 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         // Add calculate profile
 
 
+        const tradeType = position && position.tradeType;
+
         const profitToSave = (() => {
             // calculate profit Sell types
-            if (position.tradeType === 'SELL') {
+            if (tradeType === 'SELL') {
                 return position.entryPrice - currentBar.close;
             };
             // default for is BUY
@@ -66,7 +68,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         })();
 
         const { startPrice, endPrice } = ((): any => {
-            if (position.tradeType === 'SELL') {
+            if (tradeType === 'SELL') {
                 return {
                     startPrice: currentBar.close,
                     endPrice: position.entryPrice
@@ -85,11 +87,9 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         log(`profit percentage ------------> ${profitPercentage}`)
 
 
-        position = {
-            ...position,
-            profit: profitToSave,
-            profitPct: profitPercentage,
-        }
+        position.profit = profitToSave;
+        position.profitPct = profitPercentage;
+
     }
 
     // exit a position
@@ -97,10 +97,12 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
         recordPosition();
 
+        const tradeType = position && position.tradeType;
+        
         const profit: any = position.profit.toFixed(2);
 
         const profitOfCapitalAmount = (() => {
-            if (position.tradeType === 'SELL') {
+            if (tradeType === 'SELL') {
                 return getTotalProfitAmount(currentBar.close, position.entryPrice, initCapital)
             }
             // Normal for BUY
