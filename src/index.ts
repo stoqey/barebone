@@ -91,8 +91,12 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         log(`profit percentage ------------> ${profitPercentage}`)
 
 
-        position.profit = profitToSave;
-        position.profitPct = profitPercentage;
+        // mutate the position
+        position = {
+            ...position,
+            profit: profitToSave,
+            profitPct: profitPercentage
+        };
 
     }
 
@@ -102,7 +106,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         recordPosition();
 
         const tradeType = position && position.tradeType;
-        
+
         const profit: any = position.profit.toFixed(2);
 
         const profitOfCapitalAmount = (() => {
