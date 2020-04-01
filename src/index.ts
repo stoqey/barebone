@@ -87,9 +87,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
         const profitPercentage = getPercentageGain(startPrice, endPrice);
 
-        log(`profit amount     ------------> ${profitToSave}`)
-        log(`profit percentage ------------> ${profitPercentage}`)
-
+        
 
         // mutate the position
         position = {
@@ -97,6 +95,10 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             profit: profitToSave,
             profitPct: profitPercentage
         };
+
+        log(`profit amount     ------------> ${position.profitAmount}`)
+        log(`profit percentage ------------> ${profitPercentage}`)
+
 
     }
 
@@ -106,23 +108,35 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         recordPosition();
 
         const tradeType = position && position.tradeType;
+        const entryPrice = position && position.entryPrice;
+        const profitMade = (position && position.profit) || 0;
+        const closePrice = currentBar && currentBar.close || (entryPrice + profitMade);
 
-        const profit: any = position.profit.toFixed(2);
+        const profit: any = profitMade.toFixed(2);
 
-        const profitOfCapitalAmount = (() => {
-            if (tradeType === 'SELL') {
-                return getTotalProfitAmount(currentBar.close, position.entryPrice, initCapital)
-            }
+
+        let profitOfCapitalAmount = 0;
+        if (tradeType === 'SELL') {
+            profitOfCapitalAmount = getTotalProfitAmount(closePrice, entryPrice, initCapital)
+        }
+        else {
             // Normal for BUY
-            return getTotalProfitAmount(position.entryPrice, currentBar.close, initCapital)
-        })();
+            profitOfCapitalAmount = getTotalProfitAmount(entryPrice, closePrice, initCapital)
+        }
 
-        position.profitAmount = profitOfCapitalAmount;
+        if(isNaN(profitOfCapitalAmount)){
+            profitOfCapitalAmount = 0;
+        };
+
+        position = {
+            ...position,
+            profitAmount: profitOfCapitalAmount
+        }
 
         log(`CLOSE ---> ${profit}`);
 
         // Record position
-        context.trades.push(position);
+        context.trades.push({ ...position });
 
         // finally close position
         return refreshVariables();
@@ -138,7 +152,6 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             profit: 0,
             profitAmount: 0,
             profitPct: 0,
-            growth: 0
         };
     }
 

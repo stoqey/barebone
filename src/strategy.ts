@@ -26,7 +26,7 @@ export async function runStrategy(args: BackTestParams): Promise<Backtest.Contex
         marketData,
         options: {
             capital,
-            debug: false,
+            debug: true,
         },
 
         strategy: {

@@ -7,7 +7,6 @@ export declare namespace Backtest {
         profit: number;
         profitAmount: number;
         profitPct: number;
-        growth: number;
     }
 
     export interface BarData {
