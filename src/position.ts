@@ -8,7 +8,7 @@ export class Position implements Backtest.Position {
     public entryPrice: number = 0;
     public profit: number = 0;
     public entryTime: Date = new Date();
-    public exitTime: Date = new Date();
+    public exitTime?: Date = new Date();
 
     public tradeType: Backtest.TradeType = 'BUY';
     public profitAmount: number = 0;

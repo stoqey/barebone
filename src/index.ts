@@ -54,7 +54,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             entryPrice: 0,
             profit: 0,
             entryTime: new Date(),
-            exitTime: new Date(),
+            exitTime: undefined,
             isOpen: false,
         });
 
@@ -131,7 +131,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         // const tradeType = position && position.tradeType;
         // const entryPrice = position && position.entryPrice;
         // const profitMade = (position && position.profit) || 0;
-        const exitTime = currentBar && currentBar.date;
+        const exitTime = new Date(currentBar && currentBar.date);
         const closePrice = currentBar && currentBar.close || (entryPrice + profitMade);
         const profit: any = profitMade.toFixed(2);
 
@@ -146,7 +146,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         }
 
         if (isNaN(profitOfCapitalAmount)) {
-            console.log('profitOfCapitalAmount', { position, currentBar })
+            // console.log('profitOfCapitalAmount', { position, currentBar })
             profitOfCapitalAmount = 0;
         };
 
@@ -174,7 +174,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             tradeType: tradeType || 'BUY', // default is buy by default
             entryPrice: currentBar.close,
             entryTime: currentBar.date,
-            exitTime: currentBar.date,
+            exitTime: undefined,
             profit: 0,
             profitAmount: 0,
             profitPct: 0,

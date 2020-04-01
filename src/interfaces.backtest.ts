@@ -3,7 +3,7 @@ export declare namespace Backtest {
     export interface Position {
         tradeType: TradeType;
         entryTime: Date;
-        exitTime: Date;
+        exitTime?: Date;
         entryPrice: number;
         profit: number;
         profitAmount: number;
