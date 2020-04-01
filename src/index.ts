@@ -1,6 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import { Backtest } from './interfaces.backtest';
 import { getPercentageGain, getTotalProfitAmount } from './utils';
+import { Position } from './position';
 
 export * from './interfaces.backtest';
 
@@ -16,10 +17,12 @@ interface BackTestArgs {
 }
 
 const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> => {
-    const { strategy, marketData: prices, options } = backtestArgs;
+    const { strategy, marketData, options } = backtestArgs;
     const { onMarketTick, analysePosition } = strategy;
 
     const { debug } = options;
+
+    const prices = [...marketData]; // new array
 
     /**
      * Log function
@@ -40,25 +43,35 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         capital: initCapital,
     }
 
-    let position: Backtest.Position = null as any;
+    let position: Position = Position.Instance;
     let currentBar = null as any;
 
     const refreshVariables = () => {
-        position = null as any;
+        position.setState({
+            tradeType: 'BUY',
+            profitAmount: 0,
+            profitPct: 0,
+            entryPrice: 0,
+            profit: 0,
+            entryTime: new Date(),
+            isOpen: false,
+        });
+
         currentBar = null;
     }
 
     const totalPrices = prices.length;
 
     // record positions
-    const recordPosition = (): void => {
+    const recordPosition = async (): Promise<any> => {
         // Get position 
         // Add calculate profile
 
+        const { tradeType, entryPrice, profit: profitMade } = position.getState();
 
-        const tradeType = position && position.tradeType;
-        const entryPrice = position && position.entryPrice;
-        const profitMade = (position && position.profit) || 0;
+        // const tradeType = position && position.tradeType;
+        // const entryPrice = position && position.entryPrice;
+        // const profitMade = (position && position.profit) || 0;
         const closePrice = currentBar && currentBar.close || (entryPrice + profitMade);
 
 
@@ -87,31 +100,37 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
 
         const profitPercentage = getPercentageGain(startPrice, endPrice);
 
-        
+
 
         // mutate the position
-        position = {
-            ...position,
+        position.setState({
+            ...(position.getState()),
             profit: profitToSave,
             profitPct: profitPercentage
-        };
+        });
 
-        log(`profit amount     ------------> ${position.profitAmount}`)
+        log(`profit amount     ------------> ${position.getState().profitAmount}`)
         log(`profit percentage ------------> ${profitPercentage}`)
 
-
+        return Promise.resolve({});
     }
 
     // exit a position
-    const exitPosition = (): void => {
+    const exitPosition = async (): Promise<any> => {
 
-        recordPosition();
+        const { tradeType, entryPrice, profit: profitMade, isOpen } = position.getState();
+        
+        if (!isOpen) {
+            return console.log('Position is not open', position.getState());
+        }
 
-        const tradeType = position && position.tradeType;
-        const entryPrice = position && position.entryPrice;
-        const profitMade = (position && position.profit) || 0;
+        await recordPosition();
+
+
+        // const tradeType = position && position.tradeType;
+        // const entryPrice = position && position.entryPrice;
+        // const profitMade = (position && position.profit) || 0;
         const closePrice = currentBar && currentBar.close || (entryPrice + profitMade);
-
         const profit: any = profitMade.toFixed(2);
 
 
@@ -124,15 +143,16 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             profitOfCapitalAmount = getTotalProfitAmount(entryPrice, closePrice, initCapital)
         }
 
-        if(isNaN(profitOfCapitalAmount)){
+        if (isNaN(profitOfCapitalAmount)) {
             console.log('profitOfCapitalAmount', { position, currentBar })
             profitOfCapitalAmount = 0;
         };
 
-        position = {
-            ...position,
-            profitAmount: profitOfCapitalAmount
-        }
+        position.setState({
+            ...(position.getState()),
+            profitAmount: profitOfCapitalAmount,
+            isOpen: false
+        });
 
         log(`CLOSE ---> ${profit}`);
 
@@ -140,28 +160,33 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         context.trades.push({ ...position });
 
         // finally close position
-        return refreshVariables();
+        refreshVariables();
+        return Promise.resolve({})
     }
 
     // Code to enterPosition
-    const enterPosition = (tradeType?: Backtest.TradeType): void => {
+    const enterPosition = (tradeType?: Backtest.TradeType): Promise<any> => {
         // Create position, 
-        position = {
+        position.setState({
             tradeType: tradeType || 'BUY', // default is buy by default
             entryPrice: currentBar.close,
             entryTime: currentBar.date,
             profit: 0,
             profitAmount: 0,
             profitPct: 0,
-        };
+            isOpen: true,
+        });
+
+        return Promise.resolve({});
     }
 
     // Finish trading
-    const finishTrading = (): Backtest.Context => {
+    const finishTrading = async (): Promise<Backtest.Context> => {
 
+        const { isOpen: isPositionOpen } = position.getState();
         // Open position close it
-        if (position) {
-            exitPosition();
+        if (isPositionOpen) {
+            await exitPosition();
         }
 
         // return finished trades
@@ -177,28 +202,29 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
      * While when have market data keep running, else finish and close any open trade
      * 
      */
-    while (prices.length) {
 
+    for (const price of prices) {
         // the current bar
-        currentBar = prices.shift();
+        currentBar = price;
 
+        const { isOpen: isPositionOpen } = position.getState();
 
+        // console.log('isPosition open', isPositionOpen);
         // If we are in a position
-        if (position) {
-            recordPosition();
+        if (isPositionOpen) {
+            await recordPosition();
             // analyse profit and changes before calling analysePosition
-            await analysePosition({ position, exitPosition, bar: currentBar })
+            await analysePosition({ position: position.getState(), exitPosition, bar: currentBar })
         }
         else {
             // On marketTick
             await onMarketTick({ bar: currentBar, enterPosition });
         }
-        continue;
     }
 
     log(`Finished processing all ${totalPrices} items`)
 
-    return finishTrading();
+    return await finishTrading();
 };
 
 export default backtest;

@@ -1,7 +1,10 @@
 import { Backtest } from './interfaces.backtest';
 
+interface PositionHolder extends Backtest.Position {
+    isOpen: boolean;
+}
 export class Position implements Backtest.Position {
-    
+
     public entryPrice: number = 0;
     public profit: number = 0;
     public entryTime: Date = new Date();
@@ -10,6 +13,7 @@ export class Position implements Backtest.Position {
     public profitAmount: number = 0;
     public profitPct: number = 0;
 
+    public isOpen: boolean = false;
     private static _instance: Position;
 
     public static get Instance() {
@@ -19,21 +23,22 @@ export class Position implements Backtest.Position {
     /**
      * setState virtual state
      */
-    public setState(state: Backtest.Position) {
+    public setState(state: PositionHolder): void {
         this.tradeType = state.tradeType;
         this.profitAmount = state.profitAmount;
         this.profitPct = state.profitPct;
         this.entryPrice = state.entryPrice;
         this.profit = state.profit;
         this.entryTime = state.entryTime;
+        this.isOpen = state.isOpen;
     };
 
     /**
      * getState
      */
-    public getState(): Backtest.Position {
-        const { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit } = this;
-        return { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit }
+    public getState(): PositionHolder {
+        const { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit, isOpen } = this;
+        return { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit, isOpen }
     }
 
     /**
