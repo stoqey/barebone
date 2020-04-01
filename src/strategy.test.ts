@@ -17,7 +17,7 @@ test.serial('Backtesting strategy', async (t: { is: (arg0: boolean, arg1: boolea
     const backTesting = await runStrategy(demoBacktest);
     console.log(chalk.black(`---------------------------------------------------------------------`))
     console.log(chalk.black(`---------------------------------------------------------------------`))
-    console.log(chalk.magentaBright(`${JSON.stringify({ capital: backTesting.capital, profit: backTesting.profit, trades: backTesting.totalTrades })}`))
+    console.log(chalk.magentaBright(`${JSON.stringify({ capital: backTesting.capital, profit: backTesting.profit, totalTrades: backTesting.totalTrades, trades: backTesting.trades })}`))
     console.log(chalk.black(`---------------------------------------------------------------------`))
     console.log(chalk.black(`---------------------------------------------------------------------`))
     t.is(isNumber(backTesting.capital), true);

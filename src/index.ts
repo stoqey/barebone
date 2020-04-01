@@ -44,7 +44,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
     }
 
     let position: Position = Position.Instance;
-    let currentBar = null as any;
+    let currentBar: Backtest.BarData = null as any;
 
     const refreshVariables = () => {
         position.setState({
@@ -54,10 +54,11 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             entryPrice: 0,
             profit: 0,
             entryTime: new Date(),
+            exitTime: new Date(),
             isOpen: false,
         });
 
-        currentBar = null;
+        currentBar = null as any;
     }
 
     const totalPrices = prices.length;
@@ -130,6 +131,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         // const tradeType = position && position.tradeType;
         // const entryPrice = position && position.entryPrice;
         // const profitMade = (position && position.profit) || 0;
+        const exitTime = currentBar && currentBar.date;
         const closePrice = currentBar && currentBar.close || (entryPrice + profitMade);
         const profit: any = profitMade.toFixed(2);
 
@@ -151,6 +153,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         position.setState({
             ...(position.getState()),
             profitAmount: profitOfCapitalAmount,
+            exitTime,
             isOpen: false
         });
 
@@ -171,6 +174,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             tradeType: tradeType || 'BUY', // default is buy by default
             entryPrice: currentBar.close,
             entryTime: currentBar.date,
+            exitTime: currentBar.date,
             profit: 0,
             profitAmount: 0,
             profitPct: 0,

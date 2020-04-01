@@ -8,6 +8,7 @@ export class Position implements Backtest.Position {
     public entryPrice: number = 0;
     public profit: number = 0;
     public entryTime: Date = new Date();
+    public exitTime: Date = new Date();
 
     public tradeType: Backtest.TradeType = 'BUY';
     public profitAmount: number = 0;
@@ -30,6 +31,7 @@ export class Position implements Backtest.Position {
         this.entryPrice = state.entryPrice;
         this.profit = state.profit;
         this.entryTime = state.entryTime;
+        this.exitTime = state.exitTime;
         this.isOpen = state.isOpen;
     };
 
@@ -37,8 +39,8 @@ export class Position implements Backtest.Position {
      * getState
      */
     public getState(): PositionHolder {
-        const { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit, isOpen } = this;
-        return { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit, isOpen }
+        const { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit, isOpen, exitTime } = this;
+        return { tradeType, profitAmount, profitPct, entryTime, entryPrice, profit, isOpen, exitTime }
     }
 
     /**
