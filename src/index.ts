@@ -125,6 +125,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         }
 
         if(isNaN(profitOfCapitalAmount)){
+            console.log('profitOfCapitalAmount', { position, currentBar })
             profitOfCapitalAmount = 0;
         };
 
