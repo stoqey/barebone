@@ -1,9 +1,12 @@
-import isEmpty from 'lodash/isEmpty';
-import { Backtest } from './interfaces.backtest';
 import { getPercentageGain, getTotalProfitAmount } from './utils';
+
+import { Backtest } from './interfaces.backtest';
 import { Position } from './position';
+import isEmpty from 'lodash/isEmpty';
 
 export * from './interfaces.backtest';
+
+export * from './position';
 
 interface Options {
     capital?: number;
