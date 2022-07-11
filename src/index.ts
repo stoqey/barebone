@@ -59,6 +59,8 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
             entryTime: new Date(),
             exitTime: undefined,
             isOpen: false,
+            virtualEntryPrice: undefined,
+            virtualEntryTime: undefined
         });
 
         currentBar = null as any;
@@ -221,7 +223,7 @@ const backtest = async (backtestArgs: BackTestArgs): Promise<Backtest.Context> =
         if (isPositionOpen) {
             await recordPosition();
             // analyse profit and changes before calling analysePosition
-            await analysePosition({ position: position.getState(), exitPosition, bar: currentBar })
+            await analysePosition({ position, exitPosition, bar: currentBar })
         }
         else {
             // On marketTick
